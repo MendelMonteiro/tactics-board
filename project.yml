@@ -1,0 +1,50 @@
+# XcodeGen project definition. CI runs `xcodegen generate` to make TacticsBoard.xcodeproj.
+# The bundle identifier below must never change, or saved data is lost on reinstall.
+name: TacticsBoard
+
+options:
+  bundleIdPrefix: com.mendelmonteiro
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "17.0"
+
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+
+packages:
+  TacticsCore:
+    path: TacticsCore
+
+targets:
+  TacticsBoard:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: TacticsBoard
+    dependencies:
+      - package: TacticsCore
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: Tactics Board
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mendelmonteiro.TacticsBoard
+        PRODUCT_NAME: TacticsBoard
+        TARGETED_DEVICE_FAMILY: "2"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_VERSION: "5.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"

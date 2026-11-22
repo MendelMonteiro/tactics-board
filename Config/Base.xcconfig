@@ -1,0 +1,3 @@
+// Shared build settings. Per-developer settings go in Config/Local.xcconfig
+// (git-ignored; copy Local.xcconfig.template to create it).
+#include? "Local.xcconfig"

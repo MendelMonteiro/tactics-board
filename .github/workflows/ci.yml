@@ -27,3 +27,85 @@ jobs:
       - name: Run TacticsCore tests
         working-directory: TacticsCore
         run: swift test
+
+  app-simulator:
+    name: Build app (iPad simulator)
+    needs: core-tests
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build for the iPad simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TacticsBoard.xcodeproj \
+            -scheme TacticsBoard \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee xcodebuild-simulator.log
+
+      - name: Upload build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-build-log
+          path: xcodebuild-simulator.log
+
+  ipa:
+    name: Unsigned IPA (for sideloading)
+    needs: core-tests
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build for iPad (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TacticsBoard.xcodeproj \
+            -scheme TacticsBoard \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            | tee xcodebuild-device.log
+
+      - name: Package the IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/TacticsBoard.app Payload/
+          zip -qry TacticsBoard.ipa Payload
+          ls -l TacticsBoard.ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: TacticsBoard-unsigned-ipa
+          path: TacticsBoard.ipa
+
+      - name: Upload build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: device-build-log
+          path: xcodebuild-device.log

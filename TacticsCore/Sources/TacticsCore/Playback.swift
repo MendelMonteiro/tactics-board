@@ -33,7 +33,7 @@ public struct Frame: Equatable, Sendable {
         }
     }
 
-    mutating func setPosition(of ref: PlayerRef, to point: PitchPoint) {
+    public mutating func setPosition(of ref: PlayerRef, to point: PitchPoint) {
         switch ref {
         case .home(let id):
             if let index = home.firstIndex(where: { $0.id == id }) {
