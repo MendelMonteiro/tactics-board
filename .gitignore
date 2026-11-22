@@ -1,0 +1,17 @@
+# Build output
+build/
+.build/
+.swiftpm/
+DerivedData/
+*.ipa
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+
+# Local, per-developer settings (never commit signing details)
+Config/Local.xcconfig
+
+# Tooling
+.superpowers/
+.DS_Store
